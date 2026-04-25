@@ -1,0 +1,56 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  clerkId   String   @unique
+  name      String
+  email     String   @unique
+  role      String   @default("membro")
+  createdAt DateTime @default(now())
+  tasks     Task[]
+  goals     Goal[]
+}
+
+model Task {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  done        Boolean   @default(false)
+  priority    String    @default("mid")
+  label       String?
+  dueDate     DateTime?
+  createdAt   DateTime  @default(now())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  goalId      String?
+  goal        Goal?     @relation(fields: [goalId], references: [id])
+}
+
+model Goal {
+  id        String    @id @default(cuid())
+  title     String
+  deadline  DateTime?
+  progress  Int       @default(0)
+  priority  String    @default("mid")
+  status    String    @default("on-track")
+  createdAt DateTime  @default(now())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  tasks     Task[]
+}
+
+model Event {
+  id        String   @id @default(cuid())
+  title     String
+  date      DateTime
+  color     String   @default("#7c6af7")
+  createdAt DateTime @default(now())
+  userId    String
+}
